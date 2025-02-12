@@ -25,6 +25,10 @@
   --surface-color: #ffffff; /* Mantiene el blanco para elementos en tarjetas o secciones */
   --contrast-color: #4a4a4a; /* Un gris neutro que asegura buena lectura sin ser demasiado fuerte */
 }
+.bi-check2-all {
+  color: #f4a261 !important;
+  font-size: 1.2rem; /* Puedes ajustar el tamaño si lo deseas */
+}
 
 /* Colores del menú de navegación */
 :root {
