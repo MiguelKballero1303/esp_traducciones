@@ -599,36 +599,37 @@
         </div>
 
         <div class="col-lg-8">
-          <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+          <form id="contact-form" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
             <div class="row gy-4">
+              <div class="col-md-6">
+                <input type="text" id="name" name="name" class="form-control" placeholder="Tu Nombre" required>
+              </div>
 
               <div class="col-md-6">
-                <input type="text" name="name" class="form-control" placeholder="Tu Nombre" required="">
-              </div>
-
-              <div class="col-md-6 ">
-                <input type="email" class="form-control" name="email" placeholder="Tu Correo Electrónico" required="">
+                <input type="email" id="email" name="email" class="form-control" placeholder="Tu Correo Electrónico"
+                  required>
               </div>
 
               <div class="col-md-12">
-                <input type="text" class="form-control" name="subject" placeholder="Asunto" required="">
+                <input type="text" id="subject" name="subject" class="form-control" placeholder="Asunto" required>
               </div>
 
               <div class="col-md-12">
-                <textarea class="form-control" name="message" rows="6" placeholder="Mensaje" required=""></textarea>
+                <textarea id="message" name="message" class="form-control" rows="6" placeholder="Mensaje"
+                  required></textarea>
               </div>
 
               <div class="col-md-12 text-center">
-                <div class="loading">Cargando</div>
-                <div class="error-message"></div>
-                <div class="sent-message">Tu mensaje ha sido enviado. ¡Gracias!</div>
+                <div class="loading" style="display:none;">Cargando...</div>
+                <div class="error-message" style="display:none;"></div>
+                <div class="sent-message" style="display:none;">Tu mensaje ha sido enviado. ¡Gracias!</div>
 
                 <button type="submit">Enviar Mensaje</button>
               </div>
-
             </div>
           </form>
-        </div><!-- End Contact Form -->
+        </div>
+
 
       </div>
 
@@ -643,7 +644,7 @@
     <div class="footer-top">
       <div class="container">
         <div class="row gy-4">
-  
+
           <!-- Logo y Contacto -->
           <div class="col-lg-4 col-md-6 footer-about">
             <a href="index.html" class="logo d-flex align-items-center">
@@ -660,7 +661,7 @@
               <a href=""><i class="bi bi-linkedin"></i></a>
             </div>
           </div>
-  
+
           <!-- Servicios -->
           <div class="col-lg-3 col-md-6 footer-links">
             <h4>Servicios</h4>
@@ -673,21 +674,22 @@
             </ul>
           </div>
 
-  
+
         </div>
       </div>
     </div>
-  
+
     <hr class="footer-divider"> <!-- Línea divisoria para estética -->
-  
+
     <div class="copyright">
       <div class="container text-center">
-        <p>© <span>Copyright</span> <strong class="px-1 sitename">ESP Solutions</strong> <span>Todos los derechos reservados</span></p>
+        <p>© <span>Copyright</span> <strong class="px-1 sitename">ESP Solutions</strong> <span>Todos los derechos
+            reservados</span></p>
       </div>
     </div>
-  
+
   </footer>
-  
+
 
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
@@ -705,7 +707,53 @@
   <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script>
+    document.getElementById("contact-form").addEventListener("submit", async function (event) {
+      event.preventDefault();
 
+      document.querySelector(".loading").style.display = "block";
+      document.querySelector(".error-message").style.display = "none";
+      document.querySelector(".sent-message").style.display = "none";
+
+      let formData = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        subject: document.getElementById("subject").value,
+        message: document.getElementById("message").value
+      };
+
+      try {
+        let response = await fetch("https://envio-correo.onrender.com/enviar_correo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+
+        document.querySelector(".loading").style.display = "none";
+
+        if (response.ok) {
+          document.querySelector(".sent-message").style.display = "block";
+          document.getElementById("contact-form").reset();
+          document.querySelector(".error-message").style.display = "none";
+        } else {
+          let result = await response.json();
+          throw new Error(result.message || "Error desconocido al enviar el mensaje.");
+        }
+      } catch (error) {
+        document.querySelector(".loading").style.display = "none";
+
+        if (error.message.includes("The form action property is not set")) {
+          console.warn("Aviso del formulario detectado, ocultando mensaje.");
+          document.querySelector(".error-message").style.display = "none";
+        } else {
+          document.querySelector(".error-message").innerText = error.message;
+          document.querySelector(".error-message").style.display = "block";
+        }
+      }
+    });
+  </script>
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
 
